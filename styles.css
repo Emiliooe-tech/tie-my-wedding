@@ -1,0 +1,330 @@
+/*
+ * Stylesheet for the Wedding Vendor Directory
+ *
+ * The design uses a neutral colour palette to create a calming and elegant
+ * experience for brides searching for vendors. Layouts are responsive and
+ * typography is kept simple for readability.
+ */
+
+/* CSS variables for easy colour adjustments */
+:root {
+  --primary-bg: #f7f4ef;    /* light beige background */
+  --secondary-bg: #ffffff;   /* card backgrounds */
+  --accent: #c4a88a;        /* soft taupe accent */
+  --text-color: #333333;     /* dark grey for text */
+  --heading-color: #5a4a42;  /* warm brown for headings */
+  --border-color: #e5ded6;   /* subtle border colour */
+  --shadow-color: rgba(0, 0, 0, 0.05); /* soft drop shadow */
+}
+
+/* Global resets and defaults */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--primary-bg);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+header {
+  background-color: var(--secondary-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--heading-color);
+}
+
+nav a {
+  margin-left: 1.5rem;
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: var(--accent);
+}
+
+/* Hero section */
+.hero {
+  background-image: url("images/hero.png");
+  background-size: cover;
+  background-position: center;
+  height: 60vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--heading-color);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(247, 244, 239, 0.7);
+  /* overlay to soften the image */
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  padding: 0 1rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--heading-color);
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+}
+
+.hero .btn {
+  display: inline-block;
+  background-color: var(--accent);
+  color: var(--secondary-bg);
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.hero .btn:hover {
+  background-color: #b89579;
+}
+
+/* Section headings */
+section h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin: 3rem 0 2rem;
+  color: var(--heading-color);
+}
+
+/* Categories grid */
+.category-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  width: 90%;
+  margin: 0 auto 4rem;
+}
+
+.category-card {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.category-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.category-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--heading-color);
+}
+
+.category-card p {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+/* Search bar */
+.search-section {
+  width: 90%;
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+#search-input {
+  width: 100%;
+  max-width: 600px;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+}
+
+#search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Vendor cards */
+.vendor-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 90%;
+  margin: 0 auto 4rem;
+}
+
+.vendor-card {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px var(--shadow-color);
+  transition: box-shadow 0.2s ease;
+}
+
+.vendor-card:hover {
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.vendor-card h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--heading-color);
+}
+
+.vendor-card .category {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.vendor-card p {
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.vendor-card .contact {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  margin-top: 0.5rem;
+}
+
+/* About section */
+.about-section {
+  background-color: var(--secondary-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 3rem 2rem;
+  width: 90%;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.about-section p {
+  max-width: 800px;
+  margin: 0.5rem auto;
+  font-size: 1rem;
+  color: var(--text-color);
+  text-align: center;
+}
+
+/* Contact section */
+.contact-section {
+  padding: 3rem 2rem;
+  width: 90%;
+  margin: 2rem auto 4rem;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  text-align: center;
+}
+
+.contact-section form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.contact-section input,
+.contact-section textarea {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--secondary-bg);
+}
+
+.contact-section textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.contact-section button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--accent);
+  color: var(--secondary-bg);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.contact-section button:hover {
+  background-color: #b89579;
+}
+
+footer {
+  background-color: var(--secondary-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+  nav a {
+    margin-left: 0.8rem;
+    font-size: 0.9rem;
+  }
+}
