@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { category: 'Catering & Cakes', name: 'Golden Fork Caterers', location: 'Houston, TX', description: 'Buffets, plated dinners and cocktail receptions.', phone: '713‑555‑3535', email: 'info@goldenforkcaterers.com' },
     { category: 'Catering & Cakes', name: 'Sugar & Spice Cake Studio', location: 'San Antonio, TX', description: 'Artistic custom wedding cakes.', phone: '210‑555‑3636', email: 'cakes@sugarandspice.com' },
 
+    // Added by user: Charcuterie catering option
+    { category: 'Catering & Cakes', name: 'Alamo Fiesta Charcuterie', location: 'San Antonio, TX', description: 'Bottomless charcuterie experience that allows guests to make their own boards.', phone: '210‑900‑9990', email: 'AlamoFiestaGroup@gmail.com' },
+
     // Hair & Makeup
     { category: 'Hair & Makeup', name: 'Glam Beauty Artistry', location: 'San Antonio, TX', description: 'On‑site hair and makeup for brides and parties.', phone: '210‑555‑3737', email: 'info@glambeauty.com' },
     { category: 'Hair & Makeup', name: 'Bridal Glow Studio', location: 'Austin, TX', description: 'Natural glam looks tailored for each bride.', phone: '512‑555‑3838', email: 'contact@bridalglowstudio.com' },
