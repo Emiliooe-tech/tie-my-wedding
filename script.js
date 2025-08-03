@@ -105,6 +105,183 @@ document.addEventListener('DOMContentLoaded', () => {
   const categoryContainer = document.getElementById('category-container');
   const vendorContainer = document.getElementById('vendor-container');
 
+  // Additional DOM elements for filter and profile
+  const filterCategorySelect = document.getElementById('filter-category');
+  const filterLocationInput = document.getElementById('filter-location');
+  const profileForm = document.getElementById('profile-form');
+  const profileNameInput = document.getElementById('profile-name');
+  const profileEmailInput = document.getElementById('profile-email');
+  const profileDisplay = document.getElementById('profile-display');
+  const profileGreeting = document.getElementById('profile-greeting');
+
+  // Populate the category dropdown filter based on existing categories.
+  categories.forEach(cat => {
+    // Skip the "All" entry because an empty value means all categories.
+    if (cat !== 'All') {
+      const option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      filterCategorySelect.appendChild(option);
+    }
+  });
+
+  /**
+   * Persist vendor ratings in localStorage under the key "vendorRatings".
+   * The structure is an object where each key is a vendor name and the value
+   * is an array of numbers representing individual star ratings. This allows
+   * averaging multiple ratings.
+   */
+  function getRatings() {
+    try {
+      return JSON.parse(localStorage.getItem('vendorRatings') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveRatings(ratings) {
+    localStorage.setItem('vendorRatings', JSON.stringify(ratings));
+  }
+
+  /**
+   * Calculate the average rating for a vendor. Returns a floating number.
+   * If no ratings exist, returns 0.
+   */
+  function getAverageRating(name) {
+    const ratings = getRatings();
+    const list = ratings[name] || [];
+    if (!list.length) return 0;
+    const sum = list.reduce((a, b) => a + b, 0);
+    return sum / list.length;
+  }
+
+  /**
+   * Create a star rating display element based on an average rating.
+   * This is used in the vendor cards to show the current rating.
+   */
+  function createStarDisplay(avg) {
+    const starContainer = document.createElement('div');
+    starContainer.className = 'star-rating';
+    const rounded = Math.round(avg * 2) / 2; // allow half stars if desired
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span');
+      // Use unicode stars: solid star for full, half star for 0.5, outline otherwise
+      if (rounded >= i) {
+        star.textContent = '★';
+      } else if (rounded >= i - 0.5) {
+        star.textContent = '☆'; // using same star for half to simplify styling
+      } else {
+        star.textContent = '☆';
+      }
+      starContainer.appendChild(star);
+    }
+    return starContainer;
+  }
+
+  /**
+   * Render an interactive star rating component for a vendor inside the modal.
+   * Clicking on a star records the rating in localStorage.
+   */
+  function renderInteractiveRating(name, container) {
+    container.innerHTML = '';
+    const currentAvg = getAverageRating(name);
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span');
+      star.className = 'interactive-star';
+      star.textContent = i <= Math.round(currentAvg) ? '★' : '☆';
+      star.dataset.value = i;
+      star.style.cursor = 'pointer';
+      star.addEventListener('click', () => {
+        const ratings = getRatings();
+        if (!ratings[name]) {
+          ratings[name] = [];
+        }
+        ratings[name].push(parseInt(star.dataset.value));
+        saveRatings(ratings);
+        // Re-render the stars with updated average
+        renderInteractiveRating(name, container);
+        // Also update vendor listing rating displays
+        filterAndRenderVendors();
+      });
+      container.appendChild(star);
+    }
+  }
+
+  /**
+   * Display the vendor details in a modal dialog. Populates fields and
+   * renders an interactive rating component.
+   */
+  const modal = document.getElementById('vendor-modal');
+  const modalName = document.getElementById('modal-name');
+  const modalDescription = document.getElementById('modal-description');
+  const modalLocation = document.getElementById('modal-location');
+  const modalContact = document.getElementById('modal-contact');
+  const modalRating = document.getElementById('modal-rating');
+  const modalClose = document.getElementById('modal-close');
+
+  function openVendorModal(vendor) {
+    modalName.textContent = vendor.name;
+    modalDescription.textContent = vendor.description;
+    modalLocation.textContent = `Location: ${vendor.location}`;
+    modalContact.textContent = `Phone: ${vendor.phone} | Email: ${vendor.email}`;
+    renderInteractiveRating(vendor.name, modalRating);
+    modal.style.display = 'block';
+  }
+
+  modalClose.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  // Close modal when clicking outside of content
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  /**
+   * Handle user profile: load existing details from localStorage and display
+   * greeting, or show form if no profile is stored.
+   */
+  function loadProfile() {
+    const name = localStorage.getItem('profileName');
+    const email = localStorage.getItem('profileEmail');
+    if (name && email) {
+      profileForm.style.display = 'none';
+      profileDisplay.style.display = 'block';
+      profileGreeting.textContent = `Welcome back, ${name}!`;
+    } else {
+      profileForm.style.display = 'block';
+      profileDisplay.style.display = 'none';
+    }
+  }
+
+  // Save profile on form submission
+  profileForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameValue = profileNameInput.value.trim();
+    const emailValue = profileEmailInput.value.trim();
+    if (nameValue && emailValue) {
+      localStorage.setItem('profileName', nameValue);
+      localStorage.setItem('profileEmail', emailValue);
+      loadProfile();
+    }
+  });
+
+  // Initial load of profile
+  loadProfile();
+
+  // Filter handlers for category dropdown and location input
+  filterCategorySelect.addEventListener('change', () => {
+    // Update activeCategory based on dropdown selection
+    activeCategory = filterCategorySelect.value || 'All';
+    renderCategories();
+    filterAndRenderVendors();
+  });
+  filterLocationInput.addEventListener('input', () => {
+    filterAndRenderVendors();
+  });
+
   // Compute unique categories from the vendor list and include an "All" option
   const categories = ['All', ...Array.from(new Set(vendors.map(v => v.category)))];
 
@@ -170,6 +347,14 @@ document.addEventListener('DOMContentLoaded', () => {
       card.appendChild(descEl);
       card.appendChild(locEl);
       card.appendChild(contactEl);
+      // Append average rating stars to each card
+      const avg = getAverageRating(v.name);
+      const ratingEl = createStarDisplay(avg);
+      card.appendChild(ratingEl);
+      // Make the card clickable to open the vendor details modal
+      card.addEventListener('click', () => {
+        openVendorModal(v);
+      });
       vendorContainer.appendChild(card);
     });
   }
@@ -179,10 +364,14 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function filterAndRenderVendors() {
     const term = searchInput.value.trim().toLowerCase();
+    // Determine selected category from activeCategory (set by cards or dropdown)
+    const selectedCategory = activeCategory === 'All' ? '' : activeCategory;
+    const locationTerm = filterLocationInput.value.trim().toLowerCase();
     const filtered = vendors.filter(v => {
-      const matchesCategory = activeCategory === 'All' || v.category === activeCategory;
-      const matchesSearch = v.name.toLowerCase().includes(term);
-      return matchesCategory && matchesSearch;
+      const matchesCategory = !selectedCategory || v.category === selectedCategory;
+      const matchesName = v.name.toLowerCase().includes(term);
+      const matchesLocation = !locationTerm || v.location.toLowerCase().includes(locationTerm);
+      return matchesCategory && matchesName && matchesLocation;
     });
     renderVendors(filtered);
   }
