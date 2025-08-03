@@ -85,6 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
     { category: 'Stationery & Attire', name: 'Suit & Tie Formal Wear', location: 'San Antonio, TX', description: 'Formal attire rental for grooms and groomsmen.', phone: '210‑555‑5656', email: 'rentals@suitandtie.com' }
   ];
 
+  // Load any user‑added vendors from localStorage and append them to the vendor list.
+  try {
+    const saved = JSON.parse(localStorage.getItem('userVendors') || '[]');
+    if (Array.isArray(saved)) {
+      saved.forEach(v => vendors.push(v));
+    }
+  } catch (e) {
+    // If parsing fails, ignore and continue with default vendors
+  }
+
   // Descriptions for each category shown on the category cards. These
   // descriptions summarise the importance of each type of vendor, inspired
   // by wedding planning guides.
@@ -113,6 +123,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileEmailInput = document.getElementById('profile-email');
   const profileDisplay = document.getElementById('profile-display');
   const profileGreeting = document.getElementById('profile-greeting');
+
+  // Elements related to vendor portal functionality
+  const vendorPortalLink = document.getElementById('vendor-portal-link');
+  const vendorLoginModal = document.getElementById('vendor-login-modal');
+  const vendorLoginClose = document.getElementById('vendor-login-close');
+  const vendorLoginForm = document.getElementById('vendor-login-form');
+  const vendorSignupForm = document.getElementById('vendor-signup-form');
+  const vendorLoginUsername = document.getElementById('vendor-login-username');
+  const vendorLoginPassword = document.getElementById('vendor-login-password');
+  const vendorSignupUsername = document.getElementById('vendor-signup-username');
+  const vendorSignupPassword = document.getElementById('vendor-signup-password');
+  const showSignupLink = document.getElementById('show-signup');
+  const showLoginLink = document.getElementById('show-login');
+  const vendorPortalSection = document.getElementById('vendor-portal');
+  const vendorUsernameDisplay = document.getElementById('vendor-username-display');
+  const vendorLogoutBtn = document.getElementById('vendor-logout');
+  const vendorAddForm = document.getElementById('vendor-add-form');
+  const vendorAddCategorySelect = document.getElementById('vendor-add-category');
+  const vendorAddName = document.getElementById('vendor-add-name');
+  const vendorAddLocation = document.getElementById('vendor-add-location');
+  const vendorAddDescription = document.getElementById('vendor-add-description');
+  const vendorAddPhone = document.getElementById('vendor-add-phone');
+  const vendorAddEmail = document.getElementById('vendor-add-email');
 
   // Populate the category dropdown filter based on categories derived from the vendor list.
   // We compute this list here instead of relying on the `categories` constant declared later
@@ -384,4 +417,201 @@ document.addEventListener('DOMContentLoaded', () => {
   searchInput.addEventListener('input', () => {
     filterAndRenderVendors();
   });
+
+  // =============================
+  // Vendor portal functionality
+  // =============================
+
+  /**
+   * Retrieve vendor accounts from localStorage. Returns an object keyed by
+   * username with password as value. If none exist, returns an empty object.
+   */
+  function getVendorAccounts() {
+    try {
+      return JSON.parse(localStorage.getItem('vendorAccounts') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  /**
+   * Save vendor accounts to localStorage.
+   */
+  function saveVendorAccounts(accounts) {
+    localStorage.setItem('vendorAccounts', JSON.stringify(accounts));
+  }
+
+  /**
+   * Persist the current logged‑in vendor username. When not logged in, this
+   * value is absent.
+   */
+  function setCurrentVendor(username) {
+    localStorage.setItem('currentVendor', username);
+  }
+  function getCurrentVendor() {
+    return localStorage.getItem('currentVendor');
+  }
+  function clearCurrentVendor() {
+    localStorage.removeItem('currentVendor');
+  }
+
+  /**
+   * Show the vendor dashboard section for the logged‑in user and hide the
+   * login modal. Also repopulate the category dropdown used when adding
+   * a new vendor.
+   */
+  function showVendorPortal() {
+    const user = getCurrentVendor();
+    if (user) {
+      vendorUsernameDisplay.textContent = user;
+      vendorPortalSection.style.display = 'block';
+      vendorLoginModal.style.display = 'none';
+      populateVendorAddCategories();
+    }
+  }
+  function hideVendorPortal() {
+    vendorPortalSection.style.display = 'none';
+  }
+
+  /**
+   * Populate the category dropdown used in the vendor add form. Excludes
+   * the "All" category.
+   */
+  function populateVendorAddCategories() {
+    vendorAddCategorySelect.innerHTML = '<option value="">Select category</option>';
+    categories.forEach(cat => {
+      if (cat === 'All') return;
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      vendorAddCategorySelect.appendChild(opt);
+    });
+  }
+
+  // Link to open portal or login depending on state
+  vendorPortalLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (getCurrentVendor()) {
+      showVendorPortal();
+    } else {
+      vendorLoginModal.style.display = 'block';
+      vendorLoginForm.style.display = 'flex';
+      vendorSignupForm.style.display = 'none';
+    }
+  });
+
+  // Close vendor login modal when clicking X or outside
+  vendorLoginClose.addEventListener('click', () => {
+    vendorLoginModal.style.display = 'none';
+  });
+  window.addEventListener('click', (event) => {
+    if (event.target === vendorLoginModal) {
+      vendorLoginModal.style.display = 'none';
+    }
+  });
+
+  // Toggle between login and signup forms
+  showSignupLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    vendorLoginForm.style.display = 'none';
+    vendorSignupForm.style.display = 'flex';
+  });
+  showLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    vendorSignupForm.style.display = 'none';
+    vendorLoginForm.style.display = 'flex';
+  });
+
+  // Handle vendor login
+  vendorLoginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = vendorLoginUsername.value.trim();
+    const password = vendorLoginPassword.value;
+    const accounts = getVendorAccounts();
+    if (accounts[username] && accounts[username] === password) {
+      setCurrentVendor(username);
+      vendorLoginForm.reset();
+      showVendorPortal();
+    } else {
+      alert('Invalid username or password.');
+    }
+  });
+
+  // Handle vendor signup
+  vendorSignupForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = vendorSignupUsername.value.trim();
+    const password = vendorSignupPassword.value;
+    if (!username || !password) {
+      alert('Please fill out all fields.');
+      return;
+    }
+    const accounts = getVendorAccounts();
+    if (accounts[username]) {
+      alert('Username already exists.');
+      return;
+    }
+    accounts[username] = password;
+    saveVendorAccounts(accounts);
+    alert('Account created! Please log in.');
+    vendorSignupForm.reset();
+    vendorSignupForm.style.display = 'none';
+    vendorLoginForm.style.display = 'flex';
+  });
+
+  // Handle vendor logout
+  vendorLogoutBtn.addEventListener('click', () => {
+    clearCurrentVendor();
+    hideVendorPortal();
+  });
+
+  // Handle adding a new vendor listing
+  vendorAddForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const category = vendorAddCategorySelect.value;
+    const nameVal = vendorAddName.value.trim();
+    const locationVal = vendorAddLocation.value.trim();
+    const descriptionVal = vendorAddDescription.value.trim();
+    const phoneVal = vendorAddPhone.value.trim();
+    const emailVal = vendorAddEmail.value.trim();
+    if (!category || !nameVal || !locationVal || !descriptionVal || !phoneVal) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+    const newVendor = {
+      category: category,
+      name: nameVal,
+      location: locationVal,
+      description: descriptionVal,
+      phone: phoneVal,
+      email: emailVal
+    };
+    vendors.push(newVendor);
+    // Save to userVendors in localStorage
+    try {
+      const list = JSON.parse(localStorage.getItem('userVendors') || '[]');
+      list.push(newVendor);
+      localStorage.setItem('userVendors', JSON.stringify(list));
+    } catch (err) {
+      localStorage.setItem('userVendors', JSON.stringify([newVendor]));
+    }
+    // Add new category if it doesn't exist
+    if (!categories.includes(category)) {
+      categories.push(category);
+      categoryDescriptions[category] = 'Community submitted vendors in this category.';
+      const opt = document.createElement('option');
+      opt.value = category;
+      opt.textContent = category;
+      filterCategorySelect.appendChild(opt);
+    }
+    populateVendorAddCategories();
+    vendorAddForm.reset();
+    alert('Vendor added successfully.');
+    filterAndRenderVendors();
+  });
+
+  // On load, show vendor portal if vendor is already logged in
+  if (getCurrentVendor()) {
+    showVendorPortal();
+  }
 });

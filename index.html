@@ -23,6 +23,8 @@
       <a href="#vendors">Vendors</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
+      <!-- Vendor portal link allows vendors to log in and manage their profile -->
+      <a href="#" id="vendor-portal-link">Vendor Portal</a>
     </nav>
   </header>
 
@@ -77,6 +79,28 @@
     </div>
   </div>
 
+  <!-- Modal for vendor login and registration -->
+  <div id="vendor-login-modal" class="modal">
+    <div class="modal-content">
+      <span id="vendor-login-close" class="close">&times;</span>
+      <h3>Vendor Portal</h3>
+      <!-- Login form shown by default -->
+      <form id="vendor-login-form">
+        <input type="text" id="vendor-login-username" placeholder="Username" required />
+        <input type="password" id="vendor-login-password" placeholder="Password" required />
+        <button type="submit">Log In</button>
+        <p style="margin-top: 1rem;">Don't have an account? <a href="#" id="show-signup">Sign up here</a></p>
+      </form>
+      <!-- Signup form hidden initially -->
+      <form id="vendor-signup-form" style="display:none;">
+        <input type="text" id="vendor-signup-username" placeholder="Choose a username" required />
+        <input type="password" id="vendor-signup-password" placeholder="Choose a password" required />
+        <button type="submit">Sign Up</button>
+        <p style="margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Log in here</a></p>
+      </form>
+    </div>
+  </div>
+
   <!-- About section explaining the purpose of the directory -->
   <section id="about" class="about-section">
     <h2>About This Directory</h2>
@@ -109,6 +133,26 @@
     <div id="profile-display" style="display:none; margin-top: 1rem;">
       <p id="profile-greeting"></p>
     </div>
+  </section>
+
+  <!-- Vendor portal section for adding or managing vendors (visible after login) -->
+  <section id="vendor-portal" class="vendor-portal-section" style="display:none;">
+    <h2>Vendor Dashboard</h2>
+    <p>Logged in as <span id="vendor-username-display"></span></p>
+    <button id="vendor-logout" style="margin-bottom:1rem;">Log Out</button>
+    <h3>Add Your Listing</h3>
+    <form id="vendor-add-form">
+      <select id="vendor-add-category" required>
+        <option value="">Select category</option>
+        <!-- Categories will be populated dynamically -->
+      </select>
+      <input type="text" id="vendor-add-name" placeholder="Business name" required />
+      <input type="text" id="vendor-add-location" placeholder="Location" required />
+      <input type="text" id="vendor-add-description" placeholder="Short description" required />
+      <input type="tel" id="vendor-add-phone" placeholder="Phone" required />
+      <input type="email" id="vendor-add-email" placeholder="Email (optional)" />
+      <button type="submit">Add Vendor</button>
+    </form>
   </section>
 
   <footer>

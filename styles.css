@@ -434,6 +434,82 @@ footer {
   background-color: #b89579;
 }
 
+/* Vendor portal section for logged‑in vendors */
+.vendor-portal-section {
+  width: 90%;
+  margin: 2rem auto 4rem;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.vendor-portal-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.vendor-portal-section select,
+.vendor-portal-section input {
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+}
+
+.vendor-portal-section button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--accent);
+  color: var(--secondary-bg);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.vendor-portal-section button:hover {
+  background-color: #b89579;
+}
+
+/* Vendor login/signup modal forms */
+#vendor-login-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+#vendor-login-modal input {
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+}
+
+#vendor-login-modal button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--accent);
+  color: var(--secondary-bg);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#vendor-login-modal button:hover {
+  background-color: #b89579;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .hero h1 {
