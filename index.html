@@ -59,6 +59,13 @@
       <!-- Options added dynamically via script.js -->
     </select>
     <input type="text" id="filter-location" placeholder="Filter by location..." />
+    <!-- Sort dropdown to order vendors by different criteria -->
+    <select id="sort-by">
+      <option value="">Sort by</option>
+      <option value="rating">Rating</option>
+      <option value="price">Price</option>
+      <option value="name">Name</option>
+    </select>
   </section>
 
   <!-- Search bar to filter vendors -->
@@ -74,6 +81,33 @@
     </div>
   </section>
 
+  <!-- Featured vendors section for monetization/highlight -->
+  <section id="featured" class="featured-section">
+    <h2>Featured Vendors</h2>
+    <div id="featured-container" class="vendor-container"></div>
+  </section>
+
+  <!-- Advertising section -->
+  <section id="ads" class="ads-section">
+    <h2>Sponsored</h2>
+    <div class="ad-placeholder">Ad space – reach engaged couples in San Antonio!</div>
+  </section>
+
+  <!-- Optional blog section for wedding tips -->
+  <section id="blog" class="blog-section">
+    <h2>Wedding Tips &amp; Inspiration</h2>
+    <div class="blog-posts">
+      <article class="blog-post">
+        <h3>Choosing the Perfect Venue in San Antonio</h3>
+        <p>Learn how to select a venue that matches your wedding vision and budget.</p>
+      </article>
+      <article class="blog-post">
+        <h3>5 Must‑Have Vendors for Your Wedding Day</h3>
+        <p>From planners to photographers, discover which vendors you need and when to book them.</p>
+      </article>
+    </div>
+  </section>
+
   <!-- Modal for vendor profile details -->
   <div id="vendor-modal" class="modal">
     <div class="modal-content">
@@ -81,10 +115,27 @@
       <h3 id="modal-name"></h3>
       <p id="modal-description"></p>
       <p id="modal-location"></p>
-      <p id="modal-contact"></p>
+      <p id="modal-price" class="vendor-price"></p>
+      <!-- Container for star rating (display only) -->
       <div id="modal-rating" class="star-rating"></div>
+      <!-- Section to display existing reviews -->
+      <div id="review-list" class="review-list"></div>
+      <!-- Review form for logged‑in members to submit a review -->
+      <div id="review-form-container" style="display:none; margin-top:1rem;">
+        <h4>Leave a Review</h4>
+        <!-- Star input for new review -->
+        <div id="review-stars" class="star-rating"></div>
+        <textarea id="review-comment" placeholder="Your review" style="width:100%; margin-top:0.5rem;"></textarea>
+        <button id="submit-review" class="btn" style="margin-top:0.5rem;">Submit Review</button>
+      </div>
+      <!-- Contact details and button to save vendor -->
+      <p id="modal-contact" style="margin-top:1rem;"></p>
       <!-- Save button appears for logged‑in members to bookmark vendors -->
       <button id="save-vendor-button" class="save-button" style="margin-top:0.5rem; display:none;">Save Vendor</button>
+      <!-- Map container to show the vendor's location. The iframe source is set dynamically in script.js -->
+      <div id="map-container" style="width:100%; height:200px; margin-top:1rem; display:none;">
+        <iframe id="modal-map" width="100%" height="100%" style="border:0;" allowfullscreen loading="lazy"></iframe>
+      </div>
     </div>
   </div>
 

@@ -12,7 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // come from a database or API.
   // Define a minimal vendor list containing only the Alamo Fiesta Charcuterie entry.
   const vendors = [
-    { category: 'Catering & Cakes', name: 'Alamo Fiesta Charcuterie', location: 'San Antonio, TX', description: 'Bottomless charcuterie experience that allows guests to make their own boards.', phone: '210‑900‑9990', email: 'AlamoFiestaGroup@gmail.com' }
+    {
+      id: 'alamo-fiesta-charcuterie',
+      category: 'Catering & Cakes',
+      name: 'Alamo Fiesta Charcuterie',
+      location: 'San Antonio, TX',
+      description: 'Bottomless charcuterie experience that allows guests to make their own boards.',
+      phone: '210‑900‑9990',
+      email: 'AlamoFiestaGroup@gmail.com',
+      price: 1500,
+      featured: true,
+      images: ['images/hero.png','images/decorative.png'],
+      reviews: []
+    }
   ];
 
   // Load any user‑added vendors from localStorage and append them to the vendor list.
@@ -48,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Additional DOM elements for filter and profile
   const filterCategorySelect = document.getElementById('filter-category');
   const filterLocationInput = document.getElementById('filter-location');
+  const sortBySelect = document.getElementById('sort-by');
   const profileForm = document.getElementById('profile-form');
   const profileNameInput = document.getElementById('profile-name');
   const profileEmailInput = document.getElementById('profile-email');
@@ -137,9 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
    * Calculate the average rating for a vendor. Returns a floating number.
    * If no ratings exist, returns 0.
    */
-  function getAverageRating(name) {
+  function getAverageRating(id) {
     const ratings = getRatings();
-    const list = ratings[name] || [];
+    const list = ratings[id] || [];
     if (!list.length) return 0;
     const sum = list.reduce((a, b) => a + b, 0);
     return sum / list.length;
@@ -172,9 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
    * Render an interactive star rating component for a vendor inside the modal.
    * Clicking on a star records the rating in localStorage.
    */
-  function renderInteractiveRating(name, container) {
+  function renderInteractiveRating(id, container) {
     container.innerHTML = '';
-    const currentAvg = getAverageRating(name);
+    const currentAvg = getAverageRating(id);
     for (let i = 1; i <= 5; i++) {
       const star = document.createElement('span');
       star.className = 'interactive-star';
@@ -183,13 +196,13 @@ document.addEventListener('DOMContentLoaded', () => {
       star.style.cursor = 'pointer';
       star.addEventListener('click', () => {
         const ratings = getRatings();
-        if (!ratings[name]) {
-          ratings[name] = [];
+        if (!ratings[id]) {
+          ratings[id] = [];
         }
-        ratings[name].push(parseInt(star.dataset.value));
+        ratings[id].push(parseInt(star.dataset.value));
         saveRatings(ratings);
         // Re-render the stars with updated average
-        renderInteractiveRating(name, container);
+        renderInteractiveRating(id, container);
         // Also update vendor listing rating displays
         filterAndRenderVendors();
       });
@@ -208,13 +221,166 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalContact = document.getElementById('modal-contact');
   const modalRating = document.getElementById('modal-rating');
   const modalClose = document.getElementById('modal-close');
+  const modalPrice = document.getElementById('modal-price');
+  const reviewListEl = document.getElementById('review-list');
+  const reviewFormContainer = document.getElementById('review-form-container');
+  const reviewStarsEl = document.getElementById('review-stars');
+  const reviewCommentEl = document.getElementById('review-comment');
+  const submitReviewBtn = document.getElementById('submit-review');
+  // Map elements inside the vendor modal
+  const mapContainer = document.getElementById('map-container');
+  const mapIframe = document.getElementById('modal-map');
+
+  // Variable to track the currently selected rating when leaving a review
+  let currentReviewRating = 0;
+
+  /**
+   * Retrieve reviews for a vendor from localStorage. Each review is an object
+   * with a numeric rating and a comment string. Returns an array or an empty
+   * array if none exist. The data is stored under the key "vendorReviews"
+   * as an object mapping vendor IDs to arrays of reviews.
+   */
+  function getVendorReviews(id) {
+    try {
+      const data = JSON.parse(localStorage.getItem('vendorReviews') || '{}');
+      return Array.isArray(data[id]) ? data[id] : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
+   * Save an array of reviews for a vendor back to localStorage. It
+   * preserves existing reviews for other vendors.
+   */
+  function saveVendorReviews(id, reviews) {
+    const data = JSON.parse(localStorage.getItem('vendorReviews') || '{}');
+    data[id] = reviews;
+    localStorage.setItem('vendorReviews', JSON.stringify(data));
+  }
+
+  /**
+   * Render the list of reviews for a vendor. If no reviews exist, a
+   * friendly message is displayed. Reviews show their star rating and
+   * associated comment. This function clears any previous content in the
+   * review list element.
+   */
+  function renderReviews(id) {
+    reviewListEl.innerHTML = '';
+    const reviews = getVendorReviews(id);
+    if (!reviews.length) {
+      const p = document.createElement('p');
+      p.textContent = 'No reviews yet. Be the first to leave a review!';
+      reviewListEl.appendChild(p);
+      return;
+    }
+    reviews.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'review-item';
+      const ratingEl = createStarDisplay(r.rating || 0);
+      const commentEl = document.createElement('p');
+      commentEl.textContent = r.comment || '';
+      item.appendChild(ratingEl);
+      item.appendChild(commentEl);
+      reviewListEl.appendChild(item);
+    });
+  }
+
+  /**
+   * Render the interactive star widget used in the review form. Clicking on
+   * a star updates the currentReviewRating variable and redraws the stars to
+   * reflect the selected rating.
+   */
+  function renderReviewStars() {
+    if (!reviewStarsEl) return;
+    reviewStarsEl.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span');
+      star.className = 'interactive-star';
+      star.style.cursor = 'pointer';
+      star.textContent = i <= currentReviewRating ? '★' : '☆';
+      star.dataset.value = i;
+      star.addEventListener('click', () => {
+        currentReviewRating = i;
+        renderReviewStars();
+      });
+      reviewStarsEl.appendChild(star);
+    }
+  }
+
+  /**
+   * Add a new review for a vendor. The review consists of a rating and
+   * comment. After saving, the vendor's average rating is updated and the
+   * review list is re-rendered.
+   */
+  function addReview(id, rating, comment) {
+    const reviews = getVendorReviews(id);
+    reviews.push({ rating, comment });
+    saveVendorReviews(id, reviews);
+    // Also add the star rating to the vendorRatings store so it contributes
+    // to the overall average displayed in listings.
+    const ratings = getRatings();
+    if (!ratings[id]) {
+      ratings[id] = [];
+    }
+    ratings[id].push(rating);
+    saveRatings(ratings);
+    // Refresh displayed reviews and average rating
+    renderReviews(id);
+    renderInteractiveRating(id, modalRating);
+    filterAndRenderVendors();
+  }
 
   function openVendorModal(vendor) {
     modalName.textContent = vendor.name;
     modalDescription.textContent = vendor.description;
-    modalLocation.textContent = `Location: ${vendor.location}`;
+    modalLocation.textContent = vendor.location;
+    // Display price if available
+    const modalPrice = document.getElementById('modal-price');
+    if (vendor.price) {
+      modalPrice.style.display = 'block';
+      modalPrice.textContent = `Starting at $${vendor.price.toLocaleString()}`;
+    } else {
+      modalPrice.style.display = 'none';
+    }
     modalContact.textContent = `Phone: ${vendor.phone} | Email: ${vendor.email}`;
-    renderInteractiveRating(vendor.name, modalRating);
+    // Render interactive stars using vendor id to store ratings
+    renderInteractiveRating(vendor.id || vendor.name, modalRating);
+    // Render existing reviews
+    renderReviews(vendor.id || vendor.name);
+    // Setup map if a location is provided
+    if (vendor.location && mapIframe && mapContainer) {
+      mapIframe.src = 'https://www.google.com/maps?q=' + encodeURIComponent(vendor.location) + '&output=embed';
+      mapContainer.style.display = 'block';
+    } else if (mapContainer) {
+      mapContainer.style.display = 'none';
+    }
+    // Setup review form visibility and functionality
+    const memberProfile = getMemberProfile();
+    if (memberProfile) {
+      reviewFormContainer.style.display = 'block';
+      // Reset current rating and redraw review stars
+      currentReviewRating = 0;
+      renderReviewStars();
+      // Attach a click handler to submit the review
+      submitReviewBtn.onclick = function (e) {
+        e.preventDefault();
+        const comment = reviewCommentEl.value.trim();
+        const rating = currentReviewRating;
+        if (rating > 0 && comment) {
+          addReview(vendor.id || vendor.name, rating, comment);
+          // Clear form fields
+          reviewCommentEl.value = '';
+          currentReviewRating = 0;
+          renderReviewStars();
+        } else {
+          alert('Please select a star rating and write a review.');
+        }
+      };
+    } else {
+      reviewFormContainer.style.display = 'none';
+      submitReviewBtn.onclick = null;
+    }
     // Show or hide the save button based on member login status
     if (saveVendorButton) {
       const profile = getMemberProfile();
@@ -287,6 +453,13 @@ document.addEventListener('DOMContentLoaded', () => {
     filterAndRenderVendors();
   });
 
+  // When sort option changes, re-render vendors based on selected sort
+  if (sortBySelect) {
+    sortBySelect.addEventListener('change', () => {
+      filterAndRenderVendors();
+    });
+  }
+
   // Compute unique categories from the vendor list and include an "All" option
   const categories = ['All', ...Array.from(new Set(vendors.map(v => v.category)))];
 
@@ -343,17 +516,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const descEl = document.createElement('p');
       descEl.textContent = v.description;
       const locEl = document.createElement('p');
-      locEl.textContent = `Location: ${v.location}`;
-      const contactEl = document.createElement('p');
-      contactEl.className = 'contact';
-      contactEl.textContent = `Phone: ${v.phone} | Email: ${v.email}`;
+      locEl.textContent = v.location;
+      const priceEl = document.createElement('p');
+      if (v.price) {
+        priceEl.className = 'price';
+        priceEl.textContent = `Starting at $${v.price.toLocaleString()}`;
+      }
+      // Build the card
       card.appendChild(catEl);
       card.appendChild(nameEl);
+      if (v.images && v.images.length) {
+        const img = document.createElement('img');
+        img.src = v.images[0];
+        img.alt = v.name;
+        img.className = 'vendor-card-image';
+        card.appendChild(img);
+      }
       card.appendChild(descEl);
       card.appendChild(locEl);
-      card.appendChild(contactEl);
+      if (priceEl) card.appendChild(priceEl);
       // Append average rating stars to each card
-      const avg = getAverageRating(v.name);
+      const avg = getAverageRating(v.id || v.name);
       const ratingEl = createStarDisplay(avg);
       card.appendChild(ratingEl);
       // Add a save button if a member is logged in
@@ -377,6 +560,64 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
+   * Render the featured vendors section. Featured vendors are highlighted listings
+   * that appear above the standard vendor list. They can be used for monetization.
+   */
+  function renderFeaturedVendors() {
+    const featuredContainer = document.getElementById('featured-container');
+    if (!featuredContainer) return;
+    featuredContainer.innerHTML = '';
+    const featured = vendors.filter(v => v.featured);
+    if (!featured.length) return;
+    featured.forEach(v => {
+      const card = document.createElement('div');
+      card.className = 'vendor-card';
+      // Highlight featured card differently if desired
+      const badge = document.createElement('span');
+      badge.textContent = 'Featured';
+      badge.style.backgroundColor = 'var(--accent)';
+      badge.style.color = 'var(--secondary-bg)';
+      badge.style.padding = '2px 6px';
+      badge.style.borderRadius = '4px';
+      badge.style.fontSize = '0.75rem';
+      card.appendChild(badge);
+      const catEl = document.createElement('div');
+      catEl.className = 'category';
+      catEl.textContent = v.category;
+      const nameEl = document.createElement('h4');
+      nameEl.textContent = v.name;
+      card.appendChild(catEl);
+      card.appendChild(nameEl);
+      if (v.images && v.images.length) {
+        const img = document.createElement('img');
+        img.src = v.images[0];
+        img.alt = v.name;
+        img.className = 'vendor-card-image';
+        card.appendChild(img);
+      }
+      const descEl = document.createElement('p');
+      descEl.textContent = v.description;
+      const locEl = document.createElement('p');
+      locEl.textContent = v.location;
+      const priceEl = document.createElement('p');
+      if (v.price) {
+        priceEl.className = 'price';
+        priceEl.textContent = `Starting at $${v.price.toLocaleString()}`;
+      }
+      card.appendChild(descEl);
+      card.appendChild(locEl);
+      if (v.price) card.appendChild(priceEl);
+      const avg = getAverageRating(v.id || v.name);
+      const ratingEl = createStarDisplay(avg);
+      card.appendChild(ratingEl);
+      card.addEventListener('click', () => {
+        openVendorModal(v);
+      });
+      featuredContainer.appendChild(card);
+    });
+  }
+
+  /**
    * Filter vendors based on the active category and search term.
    */
   function filterAndRenderVendors() {
@@ -384,18 +625,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Determine selected category from activeCategory (set by cards or dropdown)
     const selectedCategory = activeCategory === 'All' ? '' : activeCategory;
     const locationTerm = filterLocationInput.value.trim().toLowerCase();
-    const filtered = vendors.filter(v => {
+    let filtered = vendors.filter(v => {
       const matchesCategory = !selectedCategory || v.category === selectedCategory;
       const matchesName = v.name.toLowerCase().includes(term);
       const matchesLocation = !locationTerm || v.location.toLowerCase().includes(locationTerm);
       return matchesCategory && matchesName && matchesLocation;
     });
+    // Apply sorting based on the sort dropdown
+    const sortValue = sortBySelect ? sortBySelect.value : '';
+    if (sortValue === 'rating') {
+      filtered.sort((a, b) => getAverageRating((b.id || b.name)) - getAverageRating((a.id || a.name)));
+    } else if (sortValue === 'price') {
+      filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else if (sortValue === 'name') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
     renderVendors(filtered);
   }
 
   // Initialise the page
   renderCategories();
   filterAndRenderVendors();
+  // Render featured vendors if any
+  renderFeaturedVendors();
 
   // Search input handler
   searchInput.addEventListener('input', () => {
