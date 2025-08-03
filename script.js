@@ -161,6 +161,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const memberLoginName = document.getElementById('member-login-name');
   const memberLoginEmail = document.getElementById('member-login-email');
 
+  // Elements for member portal
+  const memberPortalSection = document.getElementById('member-portal');
+  const memberNameDisplay = document.getElementById('member-name-display');
+  const memberLogoutBtn = document.getElementById('member-logout');
+  const savedVendorsList = document.getElementById('saved-vendors-list');
+  const memberAddContactForm = document.getElementById('member-add-contact-form');
+  const contactNameInput = document.getElementById('contact-name');
+  const contactEmailInput = document.getElementById('contact-email');
+  const contactsList = document.getElementById('contacts-list');
+
+  // Save button in vendor modal
+  const saveVendorButton = document.getElementById('save-vendor-button');
+
   // Populate the category dropdown filter based on categories derived from the vendor list.
   // We compute this list here instead of relying on the `categories` constant declared later
   // to avoid referencing a variable before its declaration (which would trigger a ReferenceError).
@@ -272,6 +285,21 @@ document.addEventListener('DOMContentLoaded', () => {
     modalLocation.textContent = `Location: ${vendor.location}`;
     modalContact.textContent = `Phone: ${vendor.phone} | Email: ${vendor.email}`;
     renderInteractiveRating(vendor.name, modalRating);
+    // Show or hide the save button based on member login status
+    if (saveVendorButton) {
+      const profile = getMemberProfile();
+      if (profile) {
+        saveVendorButton.style.display = 'inline-block';
+        // Overwrite any previous click handler
+        saveVendorButton.onclick = function (e) {
+          e.stopPropagation();
+          addVendorToFavorites(vendor);
+        };
+      } else {
+        saveVendorButton.style.display = 'none';
+        saveVendorButton.onclick = null;
+      }
+    }
     modal.style.display = 'block';
   }
 
@@ -398,6 +426,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const avg = getAverageRating(v.name);
       const ratingEl = createStarDisplay(avg);
       card.appendChild(ratingEl);
+      // Add a save button if a member is logged in
+      if (getMemberProfile()) {
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'save-button';
+        saveBtn.textContent = 'Save';
+        saveBtn.addEventListener('click', (evt) => {
+          // Prevent the card click from opening the modal when saving
+          evt.stopPropagation();
+          addVendorToFavorites(v);
+        });
+        card.appendChild(saveBtn);
+      }
       // Make the card clickable to open the vendor details modal
       card.addEventListener('click', () => {
         openVendorModal(v);
@@ -617,12 +657,18 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Please enter your name and email.');
       return;
     }
-    // Save to localStorage for user profile
+    // Create or update member profile with favourites and contacts arrays
+    const profile = getMemberProfile() || { favorites: [], contacts: [] };
+    profile.name = nameVal;
+    profile.email = emailVal;
+    saveMemberProfile(profile);
+    // Also update profileName/profileEmail for greeting (existing profile section)
     localStorage.setItem('profileName', nameVal);
     localStorage.setItem('profileEmail', emailVal);
     loadProfile();
     memberLoginForm.reset();
     memberLoginModal.style.display = 'none';
+    showMemberPortal();
     alert('Welcome! Your profile has been saved.');
   });
 
@@ -702,6 +748,145 @@ document.addEventListener('DOMContentLoaded', () => {
   // On load, show vendor portal if vendor is already logged in
   if (getCurrentVendor()) {
     showVendorPortal();
+  }
+
+  // =============================
+  // Member portal functionality
+  // =============================
+
+  /**
+   * Retrieve the member profile from localStorage. Returns an object with
+   * name, email, favorites (array) and contacts (array). If none exist,
+   * returns null.
+   */
+  function getMemberProfile() {
+    try {
+      return JSON.parse(localStorage.getItem('memberProfile') || 'null');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * Save the member profile back to localStorage.
+   * @param {Object} profile The profile object containing name, email, favorites and contacts
+   */
+  function saveMemberProfile(profile) {
+    localStorage.setItem('memberProfile', JSON.stringify(profile));
+  }
+
+  /**
+   * Show the member dashboard if the user is logged in. Renders the saved
+   * vendors list and contacts.
+   */
+  function showMemberPortal() {
+    const profile = getMemberProfile();
+    if (profile) {
+      memberNameDisplay.textContent = profile.name;
+      renderSavedVendors(profile.favorites);
+      renderContacts(profile.contacts);
+      memberPortalSection.style.display = 'block';
+    }
+  }
+  function hideMemberPortal() {
+    memberPortalSection.style.display = 'none';
+  }
+
+  /**
+   * Render the list of saved vendors in the dashboard.
+   * @param {Array} list Array of vendor objects
+   */
+  function renderSavedVendors(list) {
+    savedVendorsList.innerHTML = '';
+    if (!list || !list.length) {
+      const li = document.createElement('li');
+      li.textContent = 'No saved vendors.';
+      savedVendorsList.appendChild(li);
+      return;
+    }
+    list.forEach(v => {
+      const li = document.createElement('li');
+      li.textContent = v.name;
+      savedVendorsList.appendChild(li);
+    });
+  }
+
+  /**
+   * Render the list of contacts.
+   * @param {Array} list Array of contact objects
+   */
+  function renderContacts(list) {
+    contactsList.innerHTML = '';
+    if (!list || !list.length) {
+      const li = document.createElement('li');
+      li.textContent = 'No contacts added.';
+      contactsList.appendChild(li);
+      return;
+    }
+    list.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = `${c.name} (${c.email})`;
+      contactsList.appendChild(li);
+    });
+  }
+
+  /**
+   * Add a vendor to the current member's favourites list. If the vendor
+   * already exists in the list, a message is shown instead.
+   * @param {Object} vendor The vendor object to add
+   */
+  function addVendorToFavorites(vendor) {
+    const profile = getMemberProfile();
+    if (!profile) {
+      alert('Please log in as a member to save vendors.');
+      return;
+    }
+    // Use vendor name as unique identifier for simplicity
+    if (profile.favorites.some(f => f.name === vendor.name)) {
+      alert('Vendor is already saved in your favourites.');
+      return;
+    }
+    profile.favorites.push({ name: vendor.name, category: vendor.category, location: vendor.location });
+    saveMemberProfile(profile);
+    renderSavedVendors(profile.favorites);
+    alert('Vendor saved successfully!');
+  }
+
+  // Handle logout for member portal
+  memberLogoutBtn.addEventListener('click', () => {
+    // Remove profileName/email and memberProfile to simulate logout
+    localStorage.removeItem('profileName');
+    localStorage.removeItem('profileEmail');
+    localStorage.removeItem('memberProfile');
+    hideMemberPortal();
+    loadProfile();
+  });
+
+  // Handle adding a new contact to the member profile
+  if (memberAddContactForm) {
+    memberAddContactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nameVal = contactNameInput.value.trim();
+      const emailVal = contactEmailInput.value.trim();
+      if (!nameVal || !emailVal) {
+        alert('Please enter contact name and email.');
+        return;
+      }
+      const profile = getMemberProfile();
+      if (!profile) {
+        alert('Please log in as a member to add contacts.');
+        return;
+      }
+      profile.contacts.push({ name: nameVal, email: emailVal });
+      saveMemberProfile(profile);
+      renderContacts(profile.contacts);
+      memberAddContactForm.reset();
+    });
+  }
+
+  // On initial load, show member portal if profile exists
+  if (getMemberProfile()) {
+    showMemberPortal();
   }
 
 });

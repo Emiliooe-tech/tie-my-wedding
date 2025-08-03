@@ -572,3 +572,42 @@ footer {
     font-size: 0.9rem;
   }
 }
+
+/* ==========================
+   Member portal styling and
+   saved vendor button
+=========================== */
+/* Member portal section for logged‑in members */
+.member-portal-section {
+  width: 90%;
+  margin: 2rem auto 4rem;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+/* Buttons for saving vendors */
+.save-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--accent);
+  color: var(--secondary-bg);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.save-button:hover {
+  background-color: #b89579;
+}
+
+/* Lists within the member portal */
+#saved-vendors-list li,
+#contacts-list li {
+  margin-bottom: 0.4rem;
+  list-style-type: disc;
+  margin-left: 1.2rem;
+  color: var(--text-color);
+}

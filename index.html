@@ -83,6 +83,8 @@
       <p id="modal-location"></p>
       <p id="modal-contact"></p>
       <div id="modal-rating" class="star-rating"></div>
+      <!-- Save button appears for logged‑in members to bookmark vendors -->
+      <button id="save-vendor-button" class="save-button" style="margin-top:0.5rem; display:none;">Save Vendor</button>
     </div>
   </div>
 
@@ -155,7 +157,7 @@
     </div>
   </section>
 
-  <!-- Vendor portal section for adding or managing vendors (visible after login) -->
+      <!-- Vendor portal section for adding or managing vendors (visible after vendor login) -->
   <section id="vendor-portal" class="vendor-portal-section" style="display:none;">
     <h2>Vendor Dashboard</h2>
     <p>Logged in as <span id="vendor-username-display"></span></p>
@@ -174,6 +176,23 @@
       <button type="submit">Add Vendor</button>
     </form>
   </section>
+
+      <!-- Member portal section for saving favourite vendors and managing contacts (visible after member login) -->
+      <section id="member-portal" class="member-portal-section" style="display:none;">
+        <h2>Member Dashboard</h2>
+        <p>Logged in as <span id="member-name-display"></span></p>
+        <button id="member-logout" style="margin-bottom:1rem;">Log Out</button>
+        <h3>Saved Vendors</h3>
+        <ul id="saved-vendors-list" style="margin-bottom:1rem;"></ul>
+        <h3>Add Contact</h3>
+        <form id="member-add-contact-form" style="display:flex; flex-direction:column; gap:0.5rem; max-width:400px;">
+          <input type="text" id="contact-name" placeholder="Contact name" required />
+          <input type="email" id="contact-email" placeholder="Contact email" required />
+          <button type="submit">Add Contact</button>
+        </form>
+        <h3 style="margin-top:1rem;">My Contacts</h3>
+        <ul id="contacts-list"></ul>
+      </section>
 
   <footer>
     <p>&copy; 2025 <strong><a href="https://TieMyWedding.com">TieMyWedding.com</a></strong>. All rights reserved.</p>
