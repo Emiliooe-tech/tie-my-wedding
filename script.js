@@ -114,15 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileDisplay = document.getElementById('profile-display');
   const profileGreeting = document.getElementById('profile-greeting');
 
-  // Populate the category dropdown filter based on existing categories.
-  categories.forEach(cat => {
-    // Skip the "All" entry because an empty value means all categories.
-    if (cat !== 'All') {
-      const option = document.createElement('option');
-      option.value = cat;
-      option.textContent = cat;
-      filterCategorySelect.appendChild(option);
-    }
+  // Populate the category dropdown filter based on categories derived from the vendor list.
+  // We compute this list here instead of relying on the `categories` constant declared later
+  // to avoid referencing a variable before its declaration (which would trigger a ReferenceError).
+  const vendorCategories = Array.from(new Set(vendors.map(v => v.category)));
+  vendorCategories.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat;
+    option.textContent = cat;
+    filterCategorySelect.appendChild(option);
   });
 
   /**
