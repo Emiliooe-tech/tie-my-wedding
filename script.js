@@ -10,79 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sample vendor data. Each vendor has a category, name, location,
   // description and contact details. In a real application this data could
   // come from a database or API.
+  // Define a minimal vendor list containing only the Alamo Fiesta Charcuterie entry.
   const vendors = [
-    // Venues
-    { category: 'Venues', name: 'Sunset Ballroom', location: 'San Antonio, TX', description: 'Elegant ballroom overlooking the skyline.', phone: '210‑555‑1234', email: 'info@sunsetballroom.com' },
-    { category: 'Venues', name: 'Oakwood Event Center', location: 'Austin, TX', description: 'Rustic indoor/outdoor venue with lush gardens.', phone: '512‑555‑9876', email: 'contact@oakwoodevents.com' },
-    { category: 'Venues', name: 'Lone Star Banquet Hall', location: 'Dallas, TX', description: 'Spacious hall with modern amenities.', phone: '214‑555‑1111', email: 'hello@lonestarhall.com' },
-    { category: 'Venues', name: 'Riverwalk Terrace', location: 'San Antonio, TX', description: 'Scenic terrace along the River Walk.', phone: '210‑555‑5678', email: 'events@riverwalkterrace.com' },
-    { category: 'Venues', name: 'Hillside Farm Venue', location: 'Hill Country, TX', description: 'Charming farm setting for rustic weddings.', phone: '830‑555‑2222', email: 'booking@hillsidefarm.com' },
-
-    // Planners
-    { category: 'Planners', name: 'Perfect Day Planning', location: 'San Antonio, TX', description: 'Full‑service wedding planning and coordination.', phone: '210‑555‑3333', email: 'info@perfectdayplanning.com' },
-    { category: 'Planners', name: 'Elegance Weddings & Events', location: 'Austin, TX', description: 'Boutique planning for intimate and grand weddings.', phone: '512‑555‑4444', email: 'contact@eleganceweddings.com' },
-    { category: 'Planners', name: 'Blissful Beginnings', location: 'Dallas, TX', description: 'Stress‑free planning from engagement to honeymoon.', phone: '214‑555‑5555', email: 'hello@blissfulbeginnings.com' },
-    { category: 'Planners', name: 'Lasting Impression Planners', location: 'Houston, TX', description: 'Creative planners specializing in themed weddings.', phone: '713‑555‑1212', email: 'info@lastingimpression.com' },
-    { category: 'Planners', name: 'Simple & Sweet Events', location: 'San Antonio, TX', description: 'Month‑of coordination for the DIY couple.', phone: '210‑555‑9090', email: 'events@simpleandsweet.com' },
-
-    // Photographers & Videographers
-    { category: 'Photography & Video', name: 'Forever Moments Photography', location: 'San Antonio, TX', description: 'Documentary‑style wedding photography.', phone: '210‑555‑8888', email: 'info@forevermoments.com' },
-    { category: 'Photography & Video', name: 'Creative Lens Studio', location: 'Austin, TX', description: 'Artistic photos and cinematic films.', phone: '512‑555‑7777', email: 'contact@creativelensstudio.com' },
-    { category: 'Photography & Video', name: 'Epic Love Films', location: 'Dallas, TX', description: 'Story‑driven videography for your love story.', phone: '214‑555‑6666', email: 'hello@epiclovefilms.com' },
-    { category: 'Photography & Video', name: 'Lens of Love', location: 'Houston, TX', description: 'Fine‑art wedding photography.', phone: '713‑555‑4444', email: 'info@lensoflove.com' },
-    { category: 'Photography & Video', name: 'Motion Memories Videography', location: 'San Antonio, TX', description: 'Highlight and full‑length wedding films.', phone: '210‑555‑7777', email: 'films@motionmemories.com' },
-
-    // Florists & Decor
-    { category: 'Florals & Decor', name: 'Bloom & Vine Florals', location: 'San Antonio, TX', description: 'Custom floral designs for every style.', phone: '210‑555‑2222', email: 'info@bloomandvine.com' },
-    { category: 'Florals & Decor', name: 'Petals & Posies', location: 'Austin, TX', description: 'Whimsical bouquets and centerpieces.', phone: '512‑555‑2323', email: 'contact@petalsposies.com' },
-    { category: 'Florals & Decor', name: 'Rustic Elegance Decor', location: 'Dallas, TX', description: 'Decor rentals and styling services.', phone: '214‑555‑2424', email: 'hello@rusticelegance.com' },
-    { category: 'Florals & Decor', name: 'Garden Bloom Florist', location: 'Houston, TX', description: 'Seasonal arrangements for ceremonies and receptions.', phone: '713‑555‑2525', email: 'info@gardenbloomflorist.com' },
-    { category: 'Florals & Decor', name: 'Blush Petal Design', location: 'San Antonio, TX', description: 'Luxurious florals and event design.', phone: '210‑555‑2626', email: 'events@blushpetaldesign.com' },
-
-    // Music (DJs & Bands)
-    { category: 'Music & Entertainment', name: 'Top Tier DJs', location: 'San Antonio, TX', description: 'Professional DJ services for unforgettable receptions.', phone: '210‑555‑2727', email: 'info@toptierdjs.com' },
-    { category: 'Music & Entertainment', name: 'Harmony Beats Band', location: 'Austin, TX', description: 'Live band specializing in jazz and pop classics.', phone: '512‑555‑2828', email: 'contact@harmonybeatsband.com' },
-    { category: 'Music & Entertainment', name: 'Rhythm & Joy DJs', location: 'Dallas, TX', description: 'Interactive DJs who keep your dance floor full.', phone: '214‑555‑2929', email: 'hello@rhythmjoydjs.com' },
-    { category: 'Music & Entertainment', name: 'Party Pulse Entertainment', location: 'Houston, TX', description: 'Wedding DJs and MCs for seamless celebrations.', phone: '713‑555‑3030', email: 'info@partypulse.com' },
-    { category: 'Music & Entertainment', name: 'Electric Groove Band', location: 'San Antonio, TX', description: 'High‑energy live band covering all genres.', phone: '210‑555‑3131', email: 'booking@electricgrooveband.com' },
-
-    // Catering & Cakes
-    { category: 'Catering & Cakes', name: 'Savory Delight Catering', location: 'San Antonio, TX', description: 'Custom menus and full‑service catering.', phone: '210‑555‑3232', email: 'info@savorydelight.com' },
-    { category: 'Catering & Cakes', name: 'Sweet Sensations Bakery', location: 'Austin, TX', description: 'Wedding cakes and dessert bars.', phone: '512‑555‑3333', email: 'contact@sweetsensations.com' },
-    { category: 'Catering & Cakes', name: 'Culinary Creations', location: 'Dallas, TX', description: 'Gourmet catering with locally sourced ingredients.', phone: '214‑555‑3434', email: 'hello@culinarycreations.com' },
-    { category: 'Catering & Cakes', name: 'Golden Fork Caterers', location: 'Houston, TX', description: 'Buffets, plated dinners and cocktail receptions.', phone: '713‑555‑3535', email: 'info@goldenforkcaterers.com' },
-    { category: 'Catering & Cakes', name: 'Sugar & Spice Cake Studio', location: 'San Antonio, TX', description: 'Artistic custom wedding cakes.', phone: '210‑555‑3636', email: 'cakes@sugarandspice.com' },
-
-    // Added by user: Charcuterie catering option
-    { category: 'Catering & Cakes', name: 'Alamo Fiesta Charcuterie', location: 'San Antonio, TX', description: 'Bottomless charcuterie experience that allows guests to make their own boards.', phone: '210‑900‑9990', email: 'AlamoFiestaGroup@gmail.com' },
-
-    // Hair & Makeup
-    { category: 'Hair & Makeup', name: 'Glam Beauty Artistry', location: 'San Antonio, TX', description: 'On‑site hair and makeup for brides and parties.', phone: '210‑555‑3737', email: 'info@glambeauty.com' },
-    { category: 'Hair & Makeup', name: 'Bridal Glow Studio', location: 'Austin, TX', description: 'Natural glam looks tailored for each bride.', phone: '512‑555‑3838', email: 'contact@bridalglowstudio.com' },
-    { category: 'Hair & Makeup', name: 'Radiant Styles Salon', location: 'Dallas, TX', description: 'Hair styling, updos and makeup services.', phone: '214‑555‑3939', email: 'hello@radiantstyles.com' },
-    { category: 'Hair & Makeup', name: 'Elegant Tresses Team', location: 'Houston, TX', description: 'Mobile beauty team for weddings.', phone: '713‑555‑4040', email: 'info@eleganttresses.com' },
-    { category: 'Hair & Makeup', name: 'Flawless Faces & Hair', location: 'San Antonio, TX', description: 'Full bridal beauty experience.', phone: '210‑555‑4141', email: 'beauty@flawlessfaceshair.com' },
-
-    // Officiants
-    { category: 'Officiants', name: 'Reverend John Smith', location: 'San Antonio, TX', description: 'Non‑denominational officiant with personalized ceremonies.', phone: '210‑555‑4242', email: 'revjohn@officiants.com' },
-    { category: 'Officiants', name: 'United Vows Officiants', location: 'Austin, TX', description: 'Team of ordained ministers for civil and religious weddings.', phone: '512‑555‑4343', email: 'info@unitedvows.com' },
-    { category: 'Officiants', name: 'Heartfelt Ceremonies', location: 'Dallas, TX', description: 'Meaningful ceremonies tailored to each couple.', phone: '214‑555‑4444', email: 'contact@heartfeltceremonies.com' },
-    { category: 'Officiants', name: 'Everlasting Union Officiants', location: 'Houston, TX', description: 'Professional officiants for all styles of weddings.', phone: '713‑555‑4545', email: 'hello@everlastingunion.com' },
-    { category: 'Officiants', name: 'Love Story Officiants', location: 'San Antonio, TX', description: 'Story‑focused wedding ceremonies.', phone: '210‑555‑4646', email: 'info@lovestoryofficiants.com' },
-
-    // Transportation
-    { category: 'Transportation', name: 'Classic Car Bridal Rides', location: 'San Antonio, TX', description: 'Vintage cars for stylish arrivals and exits.', phone: '210‑555‑4747', email: 'info@classiccarbridalrides.com' },
-    { category: 'Transportation', name: 'Elegant Limousine Service', location: 'Austin, TX', description: 'Luxury limos and stretch SUVs.', phone: '512‑555‑4848', email: 'contact@elegantlimo.com' },
-    { category: 'Transportation', name: 'Luxe Wedding Wheels', location: 'Dallas, TX', description: 'High‑end vehicles and professional chauffeurs.', phone: '214‑555‑4949', email: 'hello@luxeweddingwheels.com' },
-    { category: 'Transportation', name: 'Comfort Coach Transport', location: 'Houston, TX', description: 'Shuttle buses for wedding guests.', phone: '713‑555‑5050', email: 'info@comfortcoach.com' },
-    { category: 'Transportation', name: 'Royal Carriage', location: 'San Antonio, TX', description: 'Horse‑drawn carriages for fairy‑tale weddings.', phone: '210‑555‑5151', email: 'bookings@royalcarriage.com' },
-
-    // Stationery & Attire
-    { category: 'Stationery & Attire', name: 'Paper & Lace Invitations', location: 'San Antonio, TX', description: 'Custom invitations, save‑the‑dates and signage.', phone: '210‑555‑5252', email: 'info@paperandlace.com' },
-    { category: 'Stationery & Attire', name: 'Tailored Elegance Bridal', location: 'Austin, TX', description: 'Designer gowns and tuxedos for purchase or rental.', phone: '512‑555‑5353', email: 'contact@tailoredelegancebridal.com' },
-    { category: 'Stationery & Attire', name: 'Couture Dresses & Suits', location: 'Dallas, TX', description: 'High‑fashion wedding attire boutiques.', phone: '214‑555‑5454', email: 'hello@couturedressesandsuits.com' },
-    { category: 'Stationery & Attire', name: 'Chic Bridal Boutique', location: 'Houston, TX', description: 'Bridal gowns, bridesmaid dresses and accessories.', phone: '713‑555‑5556', email: 'info@chicbridal.com' },
-    { category: 'Stationery & Attire', name: 'Suit & Tie Formal Wear', location: 'San Antonio, TX', description: 'Formal attire rental for grooms and groomsmen.', phone: '210‑555‑5656', email: 'rentals@suitandtie.com' }
+    { category: 'Catering & Cakes', name: 'Alamo Fiesta Charcuterie', location: 'San Antonio, TX', description: 'Bottomless charcuterie experience that allows guests to make their own boards.', phone: '210‑900‑9990', email: 'AlamoFiestaGroup@gmail.com' }
   ];
 
   // Load any user‑added vendors from localStorage and append them to the vendor list.
