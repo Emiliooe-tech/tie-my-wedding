@@ -23,8 +23,15 @@
       <a href="#vendors">Vendors</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
-      <!-- Vendor portal link allows vendors to log in and manage their profile -->
-      <a href="#" id="vendor-portal-link">Vendor Portal</a>
+      <!-- Combined login dropdown: vendors and members can choose their login type -->
+      <div class="login-dropdown">
+        <button id="login-button" class="login-button">Login ▾</button>
+        <div id="login-dropdown-menu" class="dropdown-menu" style="display:none;">
+          <!-- Use buttons instead of anchors for login options to avoid link navigation and ensure proper click handling -->
+          <button type="button" id="member-login-link" class="dropdown-item" onclick="handleMemberLogin()">Member Login</button>
+          <button type="button" id="vendor-login-link" class="dropdown-item" onclick="handleVendorLogin()">Vendor Login</button>
+        </div>
+      </div>
     </nav>
   </header>
 
@@ -97,6 +104,19 @@
         <input type="password" id="vendor-signup-password" placeholder="Choose a password" required />
         <button type="submit">Sign Up</button>
         <p style="margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Log in here</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal for member login (simple profile capture) -->
+  <div id="member-login-modal" class="modal">
+    <div class="modal-content">
+      <span id="member-login-close" class="close">&times;</span>
+      <h3>Member Login</h3>
+      <form id="member-login-form">
+        <input type="text" id="member-login-name" placeholder="Your name" required />
+        <input type="email" id="member-login-email" placeholder="Your email" required />
+        <button type="submit">Log In</button>
       </form>
     </div>
   </div>

@@ -510,6 +510,58 @@ footer {
   background-color: #b89579;
 }
 
+/* Styles for the login dropdown in the navigation */
+.login-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.login-button {
+  background: none;
+  border: none;
+  /* Use text colour to match other nav links */
+  color: var(--text-color);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1rem;
+  font-family: inherit;
+}
+
+.login-button:focus {
+  outline: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 6px var(--shadow-color);
+  border-radius: 4px;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+/* Styles for items within the login dropdown. Using buttons instead of anchors for better click handling */
+.dropdown-menu .dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap; /* prevent text wrapping */
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: var(--primary-bg);
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .hero h1 {
