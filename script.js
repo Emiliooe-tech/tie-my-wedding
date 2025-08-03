@@ -124,8 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileDisplay = document.getElementById('profile-display');
   const profileGreeting = document.getElementById('profile-greeting');
 
+  // Elements related to login dropdown and vendor/member portals
+  const loginButton = document.getElementById('login-button');
+  const loginDropdownMenu = document.getElementById('login-dropdown-menu');
+  const vendorLoginLinkEl = document.getElementById('vendor-login-link');
+  const memberLoginLinkEl = document.getElementById('member-login-link');
+
   // Elements related to vendor portal functionality
-  const vendorPortalLink = document.getElementById('vendor-portal-link');
+  // vendor-portal-link no longer exists; replaced by login dropdown
+  //const vendorPortalLink = document.getElementById('vendor-portal-link');
   const vendorLoginModal = document.getElementById('vendor-login-modal');
   const vendorLoginClose = document.getElementById('vendor-login-close');
   const vendorLoginForm = document.getElementById('vendor-login-form');
@@ -146,6 +153,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const vendorAddDescription = document.getElementById('vendor-add-description');
   const vendorAddPhone = document.getElementById('vendor-add-phone');
   const vendorAddEmail = document.getElementById('vendor-add-email');
+
+  // Elements for member login modal
+  const memberLoginModal = document.getElementById('member-login-modal');
+  const memberLoginClose = document.getElementById('member-login-close');
+  const memberLoginForm = document.getElementById('member-login-form');
+  const memberLoginName = document.getElementById('member-login-name');
+  const memberLoginEmail = document.getElementById('member-login-email');
 
   // Populate the category dropdown filter based on categories derived from the vendor list.
   // We compute this list here instead of relying on the `categories` constant declared later
@@ -489,8 +503,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Link to open portal or login depending on state
-  vendorPortalLink.addEventListener('click', (e) => {
+  // ===== Login dropdown handling =====
+  // Toggle display of the login dropdown when clicking the button
+  loginButton.addEventListener('click', (e) => {
     e.preventDefault();
+    const isVisible = loginDropdownMenu.style.display === 'block';
+    loginDropdownMenu.style.display = isVisible ? 'none' : 'block';
+  });
+
+  // Hide dropdown when clicking anywhere else on the page
+  window.addEventListener('click', (e) => {
+    if (!loginButton.contains(e.target) && !loginDropdownMenu.contains(e.target)) {
+      loginDropdownMenu.style.display = 'none';
+    }
+  });
+
+  /**
+   * Define global functions for vendor and member login. These functions
+   * are referenced directly via onclick attributes in the HTML so that
+   * clicks on the dropdown options always trigger the correct action.
+   */
+  window.handleVendorLogin = function () {
+    loginDropdownMenu.style.display = 'none';
     if (getCurrentVendor()) {
       showVendorPortal();
     } else {
@@ -498,7 +532,33 @@ document.addEventListener('DOMContentLoaded', () => {
       vendorLoginForm.style.display = 'flex';
       vendorSignupForm.style.display = 'none';
     }
-  });
+  };
+  window.handleMemberLogin = function () {
+    loginDropdownMenu.style.display = 'none';
+    memberLoginModal.style.display = 'block';
+  };
+
+  /**
+   * Attach explicit click handlers to the vendor and member login buttons in
+   * the dropdown. While the HTML uses inline `onclick` attributes, adding
+   * these listeners with `stopPropagation()` ensures that the click events
+   * are handled before the global document click listeners (which hide
+   * dropdowns/modals) can interfere. Without stopping propagation, the
+   * window-level click handler may run first and prevent the desired
+   * behaviour, particularly on the vendor login button.
+   */
+  if (vendorLoginLinkEl) {
+    vendorLoginLinkEl.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      window.handleVendorLogin();
+    });
+  }
+  if (memberLoginLinkEl) {
+    memberLoginLinkEl.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      window.handleMemberLogin();
+    });
+  }
 
   // Close vendor login modal when clicking X or outside
   vendorLoginClose.addEventListener('click', () => {
@@ -535,6 +595,35 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       alert('Invalid username or password.');
     }
+  });
+
+  // ===== Member login handling =====
+  // Close member login modal when clicking X
+  memberLoginClose.addEventListener('click', () => {
+    memberLoginModal.style.display = 'none';
+  });
+  // Close member login modal when clicking outside
+  window.addEventListener('click', (event) => {
+    if (event.target === memberLoginModal) {
+      memberLoginModal.style.display = 'none';
+    }
+  });
+  // Handle member login (simple profile capture)
+  memberLoginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameVal = memberLoginName.value.trim();
+    const emailVal = memberLoginEmail.value.trim();
+    if (!nameVal || !emailVal) {
+      alert('Please enter your name and email.');
+      return;
+    }
+    // Save to localStorage for user profile
+    localStorage.setItem('profileName', nameVal);
+    localStorage.setItem('profileEmail', emailVal);
+    loadProfile();
+    memberLoginForm.reset();
+    memberLoginModal.style.display = 'none';
+    alert('Welcome! Your profile has been saved.');
   });
 
   // Handle vendor signup
@@ -614,4 +703,5 @@ document.addEventListener('DOMContentLoaded', () => {
   if (getCurrentVendor()) {
     showVendorPortal();
   }
+
 });
