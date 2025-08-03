@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Updated site title to reflect the new name "The Tie" -->
+  <title>The Tie | Wedding Vendor Directory</title>
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <!-- Updated logo/name to "The Tie" -->
+    <div class="logo">The Tie</div>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#categories">Categories</a>
+      <a href="#vendors">Vendors</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Hero section with call to action -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1>Find Your Perfect Wedding Vendors</h1>
+      <p>Discover the best venues, planners, caterers and more for your big day.</p>
+      <a href="#categories" class="btn">Browse Vendors</a>
+    </div>
+  </section>
+
+  <!-- Categories section dynamically populated via JavaScript -->
+  <section id="categories" class="categories-section">
+    <h2>Categories</h2>
+    <div id="category-container" class="category-container">
+      <!-- Category cards inserted by script.js -->
+    </div>
+  </section>
+
+  <!-- Search bar to filter vendors -->
+  <section id="search" class="search-section">
+    <input type="text" id="search-input" placeholder="Search for vendors by name..." />
+  </section>
+
+  <!-- Vendors section dynamically populated via JavaScript -->
+  <section id="vendors" class="vendors-section">
+    <h2>Vendors</h2>
+    <div id="vendor-container" class="vendor-container">
+      <!-- Vendor cards inserted by script.js -->
+    </div>
+  </section>
+
+  <!-- About section explaining the purpose of the directory -->
+  <section id="about" class="about-section">
+    <h2>About This Directory</h2>
+    <p>
+      Planning a wedding can be overwhelming. This directory is designed to help you find reputable vendors in key categories like venues, planners, photographers, florists, entertainment and more. By gathering vendor details in one place and offering helpful filters, we make it easier to plan the wedding of your dreams.
+    </p>
+  </section>
+
+  <!-- Contact section with simple form -->
+  <section id="contact" class="contact-section">
+    <h2>Get in Touch</h2>
+    <p>If you have questions or would like to add your business to our directory, please reach out.</p>
+    <p>You can also email us directly at <strong><a href="mailto:info@tiemywedding.com">info@TieMyWedding.com</a></strong>.</p>
+    <form id="contact-form" onsubmit="event.preventDefault(); alert('Thank you! We will be in touch.');">
+      <input type="text" placeholder="Your name" required>
+      <input type="email" placeholder="Your email" required>
+      <textarea placeholder="Your message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 <strong><a href="https://TieMyWedding.com">TieMyWedding.com</a></strong>. All rights reserved.</p>
+  </footer>
+
+  <!-- Main script -->
+  <script src="script.js"></script>
+</body>
+</html>
