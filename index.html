@@ -43,6 +43,15 @@
     </div>
   </section>
 
+  <!-- Filter section to refine results by category and location -->
+  <section id="filter" class="filter-section">
+    <select id="filter-category">
+      <option value="">All Categories</option>
+      <!-- Options added dynamically via script.js -->
+    </select>
+    <input type="text" id="filter-location" placeholder="Filter by location..." />
+  </section>
+
   <!-- Search bar to filter vendors -->
   <section id="search" class="search-section">
     <input type="text" id="search-input" placeholder="Search for vendors by name..." />
@@ -55,6 +64,18 @@
       <!-- Vendor cards inserted by script.js -->
     </div>
   </section>
+
+  <!-- Modal for vendor profile details -->
+  <div id="vendor-modal" class="modal">
+    <div class="modal-content">
+      <span id="modal-close" class="close">&times;</span>
+      <h3 id="modal-name"></h3>
+      <p id="modal-description"></p>
+      <p id="modal-location"></p>
+      <p id="modal-contact"></p>
+      <div id="modal-rating" class="star-rating"></div>
+    </div>
+  </div>
 
   <!-- About section explaining the purpose of the directory -->
   <section id="about" class="about-section">
@@ -75,6 +96,19 @@
       <textarea placeholder="Your message" required></textarea>
       <button type="submit">Send Message</button>
     </form>
+  </section>
+
+  <!-- User profile section -->
+  <section id="profile" class="profile-section">
+    <h2>Your Profile</h2>
+    <form id="profile-form">
+      <input type="text" id="profile-name" placeholder="Your name" required />
+      <input type="email" id="profile-email" placeholder="Your email" required />
+      <button type="submit">Save Profile</button>
+    </form>
+    <div id="profile-display" style="display:none; margin-top: 1rem;">
+      <p id="profile-greeting"></p>
+    </div>
   </section>
 
   <footer>
